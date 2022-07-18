@@ -1,5 +1,15 @@
 <script>
 	import '../app.css';
+	import { supabase } from '$lib/db';
+	import { user } from '$lib/userStore';
+
+	user.set(supabase.auth.user());
+
+	supabase.auth.onAuthStateChange((_, session) => {
+		user.set(supabase.auth.user());
+	});
+
+	console.log($user);
 </script>
 
 <div class="container mx-auto">
