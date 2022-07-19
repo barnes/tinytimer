@@ -2,6 +2,7 @@
 	import '../app.css';
 	import { supabase } from '$lib/db';
 	import { user } from '$lib/userStore';
+	import Nav from '../components/Nav.svelte';
 
 	user.set(supabase.auth.user());
 
@@ -17,6 +18,7 @@
 		<h1 class="text-4xl">tinytimer</h1>
 		<p>A stupid simple daily task timer.</p>
 	</div>
+	<Nav />
 	<div class="content p-6">
 		<slot />
 	</div>
