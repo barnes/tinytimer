@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Button from './Button.svelte';
-	import { createTask } from '$lib/taskStore';
+	import { createTask, getTasks } from '$lib/taskStore';
 	import { user } from '$lib/userStore';
 	import TextField from './TextField.svelte';
 
@@ -16,6 +16,6 @@
 	disabled={false}
 	on:click={() => {
 		createTask(task);
-		task.text = '';
+		getTasks($user.id);
 	}}
 />

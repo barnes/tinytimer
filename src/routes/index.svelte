@@ -18,10 +18,12 @@
 	let timeFormatted: number;
 	let currentUser: string;
 
-	onMount(async () => {
-		console.log('mounting...');
-		console.log($tasks);
-	});
+	// onMount(async () => {
+	// 	let data = await getTasks($user.id);
+	// 	console.log($tasks)
+	// });
+
+	
 
 	const magicLink = async () => {
 		try {
@@ -43,7 +45,9 @@
 		{$user.id}
 	</h1>
 	<NewTaskForm />
-	<TaskList tasks={$tasks} />
+
+	<TaskList />
+
 {:else if $user == null}
 	<h2 class="text-2xl">Sign Up with Magic Link</h2>
 	<p>Enter your email, and a link to login will be sent to you. No passwords, no nothing.</p>
