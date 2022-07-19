@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { deleteTask, updateTask } from '$lib/taskStore';
+	import type { Task } from '$lib/taskStore'
 	import Button from './Button.svelte';
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher();
 
-	export let task: object;
+	export let task: Task;
 	let startTime: number;
 	let endTime: number;
 	let timeRunning = false;
@@ -39,18 +40,11 @@
 
 
 </script>
-{#if timeRunning}
-	<div class="flex flex-row justify-between border-2 border-purple-300 py-2 px-2 items-center bg-purple-100">
-		<h1 class="text-xl">{task.text}</h1>
-		<Button on:click={recordTime} label={timeRunning ? 'Stop' : 'Start'} />
-		<span>Time Elapsed: {formatTime(task.time)}</span>
-		<Button on:click={deleteTask(task.id)} label="Delete" />
-	</div>
-{:else}
-	<div class="flex flex-row justify-between border-2 border-purple-300 py-2 px-2 items-center">
-		<h1 class="text-xl">{task.text}</h1>
-		<Button on:click={recordTime} label={timeRunning ? 'Stop' : 'Start'} />
-		<span>Time Elapsed: {formatTime(task.time)}</span>
-		<Button on:click={deleteTask(task.id)} label="Delete" />
-	</div>
-{/if}
+
+<div class="flex flex-row justify-between border-2 border-purple-300 py-2 px-2 items-center {timeRunning? "bg-purple-300": ""}">
+	<h1 class="text-xl">{task.text}</h1>
+	<Button on:click={recordTime} label={timeRunning ? 'Stop' : 'Start'} disabled={false} />
+	<span>Time Elapsed: {formatTime(task.time)}</span>
+	<Button on:click={deleteTask(task.id)} label="Delete" disabled={false}/>
+</div>
+

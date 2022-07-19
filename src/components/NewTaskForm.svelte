@@ -10,7 +10,7 @@
 	};
 </script>
 
-<TextField placeholder="new tasks" bind:value={task.text} />
+<TextField placeholder="new tasks" password={false} bind:value={task.text} />
 <Button
 	label="Test Create Task"
 	disabled={false}

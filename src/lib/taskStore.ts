@@ -3,7 +3,8 @@ import { supabase } from '$lib/db.js';
 
 export const tasks = writable();
 
-interface Task  {
+export interface Task  {
+	'id': number,
 	'uuid': string,
 	'text': string,
 	'time': number,
@@ -21,7 +22,7 @@ export const createTask = async (task: object) => {
 	}
 };
 
-export const deleteTask = async (taskID: string) => {
+export const deleteTask = async (taskID: number) => {
 	console.log(supabase.auth.session());
 	const { data, error } = await supabase.from('tasks').delete().eq('id', taskID);
 	if (error) {
@@ -41,7 +42,7 @@ export const updateTask = async (task: Task) => {
 	}
 };
 
-export const getTasks = async (userID) => {
+export const getTasks = async (userID: string) => {
 	const { data, error } = await supabase.from('tasks').select('*').eq('uuid', userID);
 	if (error) {
 		console.error(error);
