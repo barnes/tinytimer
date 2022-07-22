@@ -2,9 +2,10 @@
 	import Button from './Button.svelte';
 	import { createTask, getTasks } from '$lib/taskStore';
 	import { user } from '$lib/userStore';
+	import type { Task } from '$lib/taskStore';
 	import TextField from './TextField.svelte';
 
-	let task = {
+	let task: Task = {
 		uuid: $user.id,
 		text: ''
 	};
@@ -16,6 +17,6 @@
 	disabled={false}
 	on:click={() => {
 		createTask(task);
-		getTasks($user.id);
+		getTasks($user);
 	}}
 />

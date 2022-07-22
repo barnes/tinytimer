@@ -1,16 +1,22 @@
-<script>
+<script type="ts">
 	import '../app.css';
 	import { supabase } from '$lib/db';
 	import { user } from '$lib/userStore';
 	import Nav from '../components/Nav.svelte';
+	import { getTasks, tasks } from '$lib/taskStore';
+
+	export async function load() {
+		let user = supabase.auth.user();
+		if (user) {
+			tasks.set(await getTasks(user));
+		}
+	}
 
 	user.set(supabase.auth.user());
 
 	supabase.auth.onAuthStateChange((_, session) => {
 		user.set(supabase.auth.user());
 	});
-
-	console.log($user);
 </script>
 
 <div class="container mx-auto">
