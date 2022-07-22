@@ -4,13 +4,16 @@
 	import NewTaskForm from '../components/NewTaskForm.svelte';
 	import { supabase } from '$lib/db';
 	import { user } from '$lib/userStore';
-	import { createTask, deleteTask, tasks, getTasks } from '$lib/taskStore';
+	import { createTask, deleteTask, tasks, getTasks, getTodaysTasks } from '$lib/taskStore';
 	import TaskList from '../components/TaskList.svelte';
 	import { onMount } from 'svelte';
+	import LoginForm from '../components/LoginForm.svelte'
 
-	let email = 'email';
+	let email = 'asdf';
 	let loading = false;
 	let checkEmailToggle = false;
+	let today = new Date();
+	let dayActive = false;
 
 	const magicLink = async () => {
 		try {
@@ -24,27 +27,38 @@
 			loading = false;
 		}
 	};
+
+	const startDay = () => {
+		console.log('Day starting');
+		dayActive = !dayActive;
+		getTodaysTasks($user);
+	}
+
+	const endDay = () => {
+		console.log('End Day');
+		dayActive = !dayActive;
+		
+	}
 </script>
 
 {#if $user != null}
-	<h1>
-		Welcome {$user.email}!
-		{$user.id}
-	</h1>
-	<NewTaskForm />
+	{#if dayActive}
+		<h1>
+			Welcome {$user.email}!
+			{$user.id}
+		</h1>
+		<p>Start logging your tasks for today here. When your done for the day, hit end day to store your work for the day.</p>
+		<NewTaskForm />
 
-	<TaskList archived={false} />
-	<TaskList archived={true} />
-{:else if $user == null}
-	<h2 class="text-2xl">Sign Up with Magic Link</h2>
-	<p>Enter your email, and a link to login will be sent to you. No passwords, no nothing.</p>
-	<div class="flex flex-row justify-center py-2">
-		<form on:submit|preventDefault={magicLink}>
-			<TextField placeholder="email" bind:value={email} password={false} />
-			<Button label="submit" disabled={loading} />
-		</form>
-	</div>
-	{#if checkEmailToggle}
-		<em>Check your email!</em>
+		{today}
+
+		<TaskList archived={false} />
+		<TaskList archived={true} />
+
+		<Button label="End Day" disabled={false} on:click={endDay} />
+	{:else }
+		<Button label="Start Day!" disabled={false} on:click={startDay} />
 	{/if}
+{:else if $user == null}
+	<LoginForm />
 {/if}

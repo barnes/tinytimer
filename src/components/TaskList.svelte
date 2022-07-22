@@ -8,10 +8,12 @@
 
 	export let archived: boolean;
 
+
+
 	//TODO: Add a conditional prop, display archived.
 </script>
 
-<h1 class="text-3xl">Task List {archived ? 'Archived' : 'Current'}</h1>
+<h1 class="text-3xl">Task List {archived ? 'Completed' : 'Current'}</h1>
 <div class="flex flex-col gap-4">
 	{#await taskObj}
 		Loading ...

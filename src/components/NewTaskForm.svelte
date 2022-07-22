@@ -13,14 +13,11 @@
 		archived: false,
 		dateCompleted: new Date()
 	};
-</script>
 
-<TextField placeholder="new tasks" password={false} bind:value={task.text} />
-<Button
-	label="Test Create Task"
-	disabled={false}
-	on:click={() => {
-		createTask(task);
-		getTasks($user);
-	}}
-/>
+</script>
+<form on:submit|preventDefault={createTask(task)}>
+	<TextField placeholder="new tasks" password={false} bind:value={task.text} />
+	<Button label="Create Task" disabled={false} />
+</form>
+
+

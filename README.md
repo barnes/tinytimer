@@ -24,3 +24,13 @@ Supabase for the backend
 - Homepage
 - Logged In
 - History / Log
+
+### TODO: 
+- Refactor index to include a day start view.
+- Create a dynamic route for day summary.
+- Remove and replace the textfield / button components...maybe?
+- Break login form to its own page
+- Implement email / password login as well
+- Time in the page title
+- keyboard shortcuts
+-- really cool dynamic shortcuts for start and stop time on tasks

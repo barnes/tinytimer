@@ -42,16 +42,15 @@
 	<h1 class="text-xl">{task.text}</h1>
 	<Button on:click={recordTime} label={timeRunning ? 'Stop' : 'Start'} disabled={false} />
 	<span>Time Elapsed: {formatTime(task.time)}</span>
-	<Button on:click={deleteTask(task.id)} label="Delete" disabled={false} />
+	<Button on:click={deleteTask(task)} label="Delete" disabled={false} />
 	<div>
-		<label for={task.id}>Archived</label>
+		<label for={task.id}>Completed</label>
 		<input
 			id={task.id}
 			type="checkbox"
 			bind:checked={task.archived}
 			on:change={() => {
 				toggleArchived(task);
-				getTasks($user);
 			}}
 		/>
 	</div>

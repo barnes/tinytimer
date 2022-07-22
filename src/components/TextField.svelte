@@ -5,7 +5,7 @@
 </script>
 
 {#if password}
-	<input type="password" bind:value {placeholder} class="py-4 px-2 bg-gray-200" />
+	<input type="password" bind:value {placeholder} class="py-4 px-2 bg-gray-200" on:focus/>
 {:else if !password}
-	<input type="text" bind:value {placeholder} class="py-4 px-2 bg-gray-200" />
+	<input type="text" bind:value {placeholder} class="py-4 px-2 bg-gray-200" on:focus/>
 {/if}
