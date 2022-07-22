@@ -8,8 +8,10 @@ export interface Task {
 	id?: number;
 	uuid: string;
 	text: string;
-	time?: number;
-	recurring?: boolean;
+	time: number;
+	recurring: boolean;
+	archived: boolean;
+	dateCompleted: Date;
 }
 
 export const createTask = async (task: Task) => {
@@ -30,7 +32,7 @@ export const deleteTask = async (task: Task) => {
 	}
 };
 
-export const updateTask = async (task: Task) => {
+export const updateTime = async (task: Task) => {
 	const { data, error } = await supabase
 		.from('tasks')
 		.update({ time: task.time })
@@ -51,6 +53,21 @@ export const getTasks = async (user: User) => {
 		console.error(error);
 	} else {
 		tasks.set(data);
+		return data;
+	}
+};
+
+export const toggleArchived = async (task: Task) => {
+	console.log(task);
+	//console.log(task.archived ? false : true);
+	const { data, error } = await supabase
+		.from('tasks')
+		.update({ archived: task.archived })
+		.eq('id', task.id);
+	if (error) {
+		console.error(error);
+	} else {
+		console.log('updated archived');
 		return data;
 	}
 };

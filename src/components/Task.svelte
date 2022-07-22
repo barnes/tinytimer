@@ -1,16 +1,11 @@
 <script lang="ts">
-	import { deleteTask, updateTask } from '$lib/taskStore';
+	import { deleteTask, updateTime, toggleArchived, getTasks } from '$lib/taskStore';
 	import type { Task } from '$lib/taskStore';
 	import Button from './Button.svelte';
-	import { createEventDispatcher } from 'svelte';
-
-	const dispatch = createEventDispatcher();
+	import { user } from '$lib/userStore';
 
 	export let task: Task;
-	let startTime: number;
-	let endTime: number;
 	let timeRunning = false;
-	let formattedTime: string;
 
 	const formatTime = (time: number) => {
 		if (time > 60) {
@@ -26,7 +21,7 @@
 		if (timeRunning) {
 			task.time++;
 			if (task.time % 30 == 0) {
-				await updateTask(task);
+				await updateTime(task);
 			}
 		}
 	}, 1000);
@@ -34,18 +29,30 @@
 	const recordTime = async () => {
 		timeRunning = !timeRunning;
 		if (task.time > 0) {
-			await updateTask(task);
+			await updateTime(task);
 		}
 	};
 </script>
 
 <div
-	class="grid grid-cols-4 gap-4 justify-between border-2 border-purple-300 py-2 px-2 items-center {timeRunning
+	class="grid grid-cols-5 gap-4 justify-between border-2 border-purple-300 py-2 px-2 items-center {timeRunning
 		? 'bg-purple-300'
-		: ''}"
+		: ''} {task.archived ? 'bg-red-200' : ''}"
 >
 	<h1 class="text-xl">{task.text}</h1>
 	<Button on:click={recordTime} label={timeRunning ? 'Stop' : 'Start'} disabled={false} />
 	<span>Time Elapsed: {formatTime(task.time)}</span>
 	<Button on:click={deleteTask(task.id)} label="Delete" disabled={false} />
+	<div>
+		<label for={task.id}>Archived</label>
+		<input
+			id={task.id}
+			type="checkbox"
+			bind:checked={task.archived}
+			on:change={() => {
+				toggleArchived(task);
+				getTasks($user);
+			}}
+		/>
+	</div>
 </div>

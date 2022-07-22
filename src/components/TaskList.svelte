@@ -1,28 +1,31 @@
 <script lang="ts">
 	import Task from './Task.svelte';
-	import { onMount } from 'svelte';
 	import { tasks, getTasks } from '$lib/taskStore';
 	import { user } from '$lib/userStore';
 
 	const taskObj = getTasks($user);
 	console.log($tasks);
-	//console.log($tasks);
 
-	// console.log('TASKSS IN TASKLIST' + $tasks);
+	export let archived: boolean;
 
-	// tasks.subscribe((value) => {
-	// 	console.log('TASKS UPDATED');
-	// 	console.log($tasks);
-	// });
+	//TODO: Add a conditional prop, display archived.
 </script>
 
-<h1 class="text-3xl">Task List</h1>
+<h1 class="text-3xl">Task List {archived ? 'Archived' : 'Current'}</h1>
 <div class="flex flex-col gap-4">
 	{#await taskObj}
 		Loading ...
 	{:then}
 		{#each $tasks as task}
-			<Task {task} />
+			{#if !archived}
+				{#if !task.archived}
+					<Task {task} />
+				{/if}
+			{:else if archived}
+				{#if task.archived}
+					<Task {task} />
+				{/if}
+			{/if}
 		{/each}
 	{/await}
 </div>

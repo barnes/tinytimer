@@ -33,7 +33,8 @@
 	</h1>
 	<NewTaskForm />
 
-	<TaskList />
+	<TaskList archived={false} />
+	<TaskList archived={true} />
 {:else if $user == null}
 	<h2 class="text-2xl">Sign Up with Magic Link</h2>
 	<p>Enter your email, and a link to login will be sent to you. No passwords, no nothing.</p>

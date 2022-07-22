@@ -7,7 +7,11 @@
 
 	let task: Task = {
 		uuid: $user.id,
-		text: ''
+		text: '',
+		time: 0,
+		recurring: false,
+		archived: false,
+		dateCompleted: new Date()
 	};
 </script>
 
