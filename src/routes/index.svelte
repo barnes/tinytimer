@@ -4,7 +4,6 @@
 	import NewTaskForm from '../components/NewTaskForm.svelte';
 	import { supabase } from '$lib/db';
 	import { user } from '$lib/userStore';
-	import { createTask, deleteTask, tasks, getTasks, getTodaysTasks, getDays } from '$lib/taskStore';
 	import TaskList from '../components/TaskList.svelte';
 	import { onMount } from 'svelte';
 	import LoginForm from '../components/LoginForm.svelte';
@@ -31,7 +30,6 @@
 	const startDay = () => {
 		console.log('Day starting');
 		dayActive = !dayActive;
-		getTodaysTasks($user);
 	};
 
 	const endDay = () => {
@@ -57,7 +55,7 @@
 		<TaskList archived={false} />
 		<TaskList archived={true} />
 
-		<Button label="End Day" disabled={false} on:click={getDays} />
+		<Button label="End Day" disabled={false} on:click={endDay} />
 	{:else}
 		<Button label="Start Day!" disabled={false} on:click={startDay} />
 	{/if}

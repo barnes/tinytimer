@@ -2,7 +2,6 @@
 	import { deleteTask, updateTime, toggleArchived, getTasks } from '$lib/taskStore';
 	import type { Task } from '$lib/taskStore';
 	import Button from './Button.svelte';
-	import { user } from '$lib/userStore';
 
 	export let task: Task;
 	let timeRunning = false;
@@ -34,15 +33,27 @@
 	};
 </script>
 
+<svelte:head>
+	<!-- {#if timeRunning} -->
+	<title>
+		{formatTime(task.time)} : {task.text}
+	</title>
+	<!-- {:else}
+		<title>tinytimer</title>
+	{/if} -->
+	<meta name="robots" content="noindex nofollow" />
+	<html lang="en" />
+</svelte:head>
+
 <div
 	class="grid grid-cols-5 gap-4 justify-between border-2 border-purple-300 py-2 px-2 items-center {timeRunning
 		? 'bg-purple-300'
 		: ''} {task.archived ? 'bg-red-200' : ''}"
 >
 	<h1 class="text-xl">{task.text}</h1>
-	<Button on:click={recordTime} label={timeRunning ? 'Stop' : 'Start'} disabled={false} />
+	<Button on:click={recordTime} disabled={false}>{timeRunning ? 'Stop' : 'Start'}</Button>
 	<span>Time Elapsed: {formatTime(task.time)}</span>
-	<Button on:click={deleteTask(task)} label="Delete" disabled={false} />
+	<Button on:click={deleteTask(task)} disabled={false}>Delete</Button>
 	<div>
 		<label for={task.id}>Completed</label>
 		<input

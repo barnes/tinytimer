@@ -3,15 +3,15 @@
 	import { supabase } from '$lib/db';
 	import { user } from '$lib/userStore';
 	import Nav from '../components/Nav.svelte';
-	import { getTasks, tasks, sorted, getDays } from '$lib/taskStore';
+	import { getTasks, tasks } from '$lib/taskStore';
 
 	export async function load() {
 		let user = supabase.auth.user();
 		if (user) {
 			tasks.set(await getTasks(user));
-			sorted.set(await getDays());
 		}
-		//console.log($sorted);
+		//console.log('from layout');
+		//console.log($tasks);
 	}
 
 	user.set(supabase.auth.user());
@@ -20,6 +20,10 @@
 		user.set(supabase.auth.user());
 	});
 </script>
+
+<svelte:head>
+	<title>tinytimer</title>
+</svelte:head>
 
 <div class="container mx-auto">
 	<div class="header bg-purple-300 text-center py-6">

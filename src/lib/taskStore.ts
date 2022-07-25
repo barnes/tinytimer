@@ -2,13 +2,9 @@ import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 import { supabase } from '$lib/db.js';
 import type { User } from '@supabase/supabase-js';
-import parseDate from 'postgres-date';
 
 const user: User | null = supabase.auth.user();
-export const tasks: Writable<Array<Tasks>> = writable();
-export const todaysTasks: Writable<TodaysTasks> = writable();
-export const daysStore: Writable<Array<string>> = writable([]);
-export const sorted = writable({});
+export const tasks: Writable<Array<Task>> = writable();
 
 export interface Task {
 	id?: number;
@@ -66,17 +62,19 @@ export const updateTime = async (task: Task) => {
 };
 
 export const getTasks = async (user: User | null) => {
-	const { data, error } = await supabase
-		.from('tasks')
-		.select('*')
-		.eq('uuid', user.id)
-		.order('id', { ascending: false });
-	if (error) {
-		console.error(error);
-		return error;
-	} else {
-		tasks.set(data);
-		return data;
+	if (user) {
+		const { data, error } = await supabase
+			.from('tasks')
+			.select('*')
+			.eq('uuid', user.id)
+			.order('id', { ascending: false });
+		if (error) {
+			console.error(error);
+			return error;
+		} else {
+			tasks.set(data);
+			return data;
+		}
 	}
 };
 
@@ -108,63 +106,3 @@ export const toggleArchived = async (task: Task) => {
 		return data;
 	}
 };
-
-export const saveDay = async (tasks: TodaysTasks) => {
-	const { data, error } = await supabase.from('days').insert(tasks);
-	if (error) {
-		console.error(error);
-		return error;
-	} else {
-		console.log('logged day');
-		getTasks(user);
-		return data;
-	}
-};
-
-//Need to figure out how to sort;
-// {
-// 	'2022-07-22': [12,14,15],
-// 	'2022-07-23': [10,9,8]
-// }
-
-export const getDays = async () => {
-	const { data, error } = await supabase.from('tasks').select('dateCompleted');
-	if (error) {
-		console.log(error);
-		return error;
-	} else {
-		let array = [];
-		data.forEach((day) => {
-			if (!array.includes(day.dateCompleted)) {
-				array.push(day.dateCompleted);
-			}
-		});
-		daysStore.set(array);
-		return data;
-	}
-};
-
-// export const getDays = async () => {
-// 	const { data, error } = await supabase.from('tasks').select('dateCompleted, id');
-// 	if (error) {
-// 		console.log(error);
-// 		return error;
-// 	} else {
-// 		let object = {};
-// 		//console.log(data);
-// 		data.forEach((task, i) => {
-// 			// console.log(i, task);
-// 			if (task.dateCompleted in object) {
-// 				//array[i].push([task.id, );
-// 				object[`${task.dateCompleted}`].push(task.id);
-// 			} else {
-// 				object[`${task.dateCompleted}`] = [];
-// 				object[`${task.dateCompleted}`].push(task.id);
-// 				//array[i].push(task.id);
-// 			}
-// 		});
-// 		//console.log(object);
-// 		sorted.set(object);
-// 		return object;
-// 	}
-// };

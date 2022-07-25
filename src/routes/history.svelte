@@ -1,24 +1,26 @@
 <script lang="ts">
-	import { sorted, tasks, daysStore, getDays, getTasks } from '$lib/taskStore';
+	import { tasks, getTasks } from '$lib/taskStore';
 	import { user } from '$lib/userStore';
-	import { onMount } from 'svelte';
 	import Task from '../components/Task.svelte';
-	onMount(async () => {
-		await getDays();
-		await getTasks($user);
+
+	let days: Array<Date> = [];
+	const taskList = getTasks($user);
+	console.log($tasks);
+
+	$tasks.forEach((task) => {
+		if (!days.includes(task.dateCompleted)) {
+			days.push(task.dateCompleted);
+		}
 	});
 
-	console.log($daysStore);
-	console.log($tasks);
+	console.log(days);
 </script>
 
-{#await daysStore}
-	{#each $daysStore as day}
-		{day}
-		{#each $tasks as task}
-			{#if task.dateCompeted == day}
-				<Task {task} />
-			{/if}
-		{/each}
+{#each days as day}
+	<h1 class="text-3xl">{day}</h1>
+	{#each $tasks as task}
+		{#if task.dateCompleted == day}
+			<Task {task} />
+		{/if}
 	{/each}
-{/await}
+{/each}
