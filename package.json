@@ -35,6 +35,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@supabase/supabase-js": "^1.35.4"
+		"@supabase/supabase-js": "^1.35.4",
+		"postgres-date": "^2.1.0"
 	}
 }

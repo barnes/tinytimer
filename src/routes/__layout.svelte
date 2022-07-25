@@ -3,13 +3,15 @@
 	import { supabase } from '$lib/db';
 	import { user } from '$lib/userStore';
 	import Nav from '../components/Nav.svelte';
-	import { getTasks, tasks } from '$lib/taskStore';
+	import { getTasks, tasks, sorted, getDays } from '$lib/taskStore';
 
 	export async function load() {
 		let user = supabase.auth.user();
 		if (user) {
 			tasks.set(await getTasks(user));
+			sorted.set(await getDays());
 		}
+		//console.log($sorted);
 	}
 
 	user.set(supabase.auth.user());
