@@ -5,9 +5,12 @@ import type { User } from '@supabase/supabase-js';
 
 const user: User | null = supabase.auth.user();
 export const tasks: Writable<Array<Task>> = writable();
+export const activeTimer = writable(false);
+
+export const keyOptions = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
 
 export interface Task {
-	id?: number;
+	id?: number | null;
 	uuid: string;
 	text: string;
 	time: number;

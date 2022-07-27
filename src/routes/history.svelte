@@ -17,7 +17,7 @@
 </script>
 
 {#each days as day}
-	<h1 class="text-3xl">{day}</h1>
+	<h1 class="text-3xl py-4">{day}</h1>
 	{#each $tasks as task}
 		{#if task.dateCompleted == day}
 			<Task {task} />

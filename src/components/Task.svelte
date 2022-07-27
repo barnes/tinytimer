@@ -1,18 +1,29 @@
 <script lang="ts">
-	import { deleteTask, updateTime, toggleArchived, getTasks } from '$lib/taskStore';
+	import { deleteTask, updateTime, toggleArchived, activeTimer } from '$lib/taskStore';
 	import type { Task } from '$lib/taskStore';
 	import Button from './Button.svelte';
 
 	export let task: Task;
+	export let hotKey: string | null;
+	console.log($activeTimer);
 	let timeRunning = false;
 
 	const formatTime = (time: number) => {
-		if (time > 60) {
-			let minutes = Math.floor(time / 60);
-			let seconds = time % 60;
+		let minutes: number;
+		let seconds: number;
+		let hours: number;
+		if (time > 3600) {
+			hours = Math.floor(time / 3600);
+			minutes = Math.floor((time % 3600) / 60);
+			seconds = (time % 3600) % 60;
+			return `${hours}h${minutes}m${seconds}s`;
+		} else if (time > 60) {
+			minutes = Math.floor(time / 60);
+			seconds = time % 60;
 			return `${minutes}m${seconds}s`;
 		} else {
-			return `${time}s`;
+			seconds = time;
+			return `${seconds}s`;
 		}
 	};
 
@@ -31,6 +42,14 @@
 			await updateTime(task);
 		}
 	};
+
+	const handleKey = async (event: any) => {
+		if (document.activeElement?.tagName != 'INPUT') {
+			if (event.key == hotKey) {
+				recordTime();
+			}
+		}
+	};
 </script>
 
 <svelte:head>
@@ -45,19 +64,27 @@
 	<html lang="en" />
 </svelte:head>
 
+<svelte:window on:keydown={handleKey} />
+
 <div
 	class="grid grid-cols-5 gap-4 justify-between border-2 border-purple-300 py-2 px-2 items-center {timeRunning
 		? 'bg-purple-300'
 		: ''} {task.archived ? 'bg-red-200' : ''}"
 >
 	<h1 class="text-xl">{task.text}</h1>
-	<Button on:click={recordTime} disabled={false}>{timeRunning ? 'Stop' : 'Start'}</Button>
+	<Button on:click={recordTime} disabled={false}>{timeRunning ? 'Stop' : 'Start'} ({hotKey})</Button
+	>
 	<span>Time Elapsed: {formatTime(task.time)}</span>
-	<Button on:click={deleteTask(task)} disabled={false}>Delete</Button>
+	<Button
+		on:click={() => {
+			deleteTask(task);
+		}}
+		disabled={false}>Delete</Button
+	>
 	<div>
-		<label for={task.id}>Completed</label>
+		<label for={task.id?.toString()}>Completed</label>
 		<input
-			id={task.id}
+			id={task.id?.toString()}
 			type="checkbox"
 			bind:checked={task.archived}
 			on:change={() => {

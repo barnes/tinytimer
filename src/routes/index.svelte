@@ -36,29 +36,31 @@
 		console.log('End Day');
 		dayActive = !dayActive;
 	};
+
+	const handleKey = async (event: any) => {
+		if (event.key == 'n') {
+			//focus new task form
+		}
+	};
 </script>
 
+<svelte:window on:keydown={handleKey} />
+
 {#if $user != null}
-	{#if dayActive}
-		<h1>
-			Welcome {$user.email}!
-			{$user.id}
-		</h1>
-		<p>
-			Start logging your tasks for today here. When your done for the day, hit end day to store your
-			work for the day.
-		</p>
-		<NewTaskForm />
+	<h1>
+		Welcome {$user.email}!
+		{$user.id}
+	</h1>
+	<p>
+		Start logging your tasks for today here. When your done for the day, hit end day to store your
+		work for the day.
+	</p>
+	<NewTaskForm />
 
-		{today}
+	{today}
 
-		<TaskList archived={false} />
-		<TaskList archived={true} />
-
-		<Button label="End Day" disabled={false} on:click={endDay} />
-	{:else}
-		<Button label="Start Day!" disabled={false} on:click={startDay} />
-	{/if}
+	<TaskList archived={false} />
+	<TaskList archived={true} />
 {:else if $user == null}
 	<LoginForm />
 {/if}
