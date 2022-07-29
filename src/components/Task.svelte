@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { deleteTask, updateTime, toggleArchived, activeTimer } from '$lib/taskStore';
+	import { deleteTask, updateTime, toggleArchived, activeTimer, timedTask } from '$lib/taskStore';
 	import type { Task } from '$lib/taskStore';
 	import Button from './Button.svelte';
+	import TextField from './TextField.svelte';
 
 	export let task: Task;
 	export let hotKey: string | null;
 	console.log($activeTimer);
 	let timeRunning = false;
+	let toggleEdit = false;
 
 	const formatTime = (time: number) => {
 		let minutes: number;
@@ -27,14 +29,51 @@
 		}
 	};
 
+	const soloTimer = async () => {
+		console.log('WHEN CLICKED:');
+		console.log($activeTimer);
+		console.log($timedTask.id);
+		console.log(task.id);
+		console.log($timedTask.id == task.id);
+		if ($activeTimer && $timedTask.id != task.id) {
+			console.log('STATE1:' + $activeTimer.id + $timedTask.id);
+			$activeTimer = false;
+			$timedTask = task;
+			await updateTime(task);
+		} else if (!$activeTimer && $timedTask.id == task.id) {
+			console.log('STATE2:' + $activeTimer.id + $timedTask.id);
+			$activeTimer = true;
+			await updateTime(task);
+		} else if ($activeTimer && $timedTask.id == task.id) {
+			console.log('STATE3:' + $activeTimer.id + $timedTask.id);
+			$activeTimer = false;
+			await updateTime(task);
+		} else if (!$activeTimer && $timedTask.id != task.id) {
+			console.log('STATE4:' + $activeTimer.id + $timedTask.id);
+			$timedTask = task;
+			$activeTimer = true;
+			await updateTime(task);
+		}
+	};
+
 	setInterval(async () => {
-		if (timeRunning) {
+		if ($activeTimer && $timedTask.id == task.id) {
+			console.log('TIMER RUNNING');
 			task.time++;
 			if (task.time % 30 == 0) {
 				await updateTime(task);
 			}
 		}
 	}, 1000);
+
+	// setInterval(async () => {
+	// 	if (timeRunning) {
+	// 		task.time++;
+	// 		if (task.time % 30 == 0) {
+	// 			await updateTime(task);
+	// 		}
+	// 	}
+	// }, 1000);
 
 	const recordTime = async () => {
 		timeRunning = !timeRunning;
@@ -49,6 +88,10 @@
 				recordTime();
 			}
 		}
+	};
+
+	const handleEdit = async () => {
+		toggleEdit = !toggleEdit;
 	};
 </script>
 
@@ -67,14 +110,22 @@
 <svelte:window on:keydown={handleKey} />
 
 <div
-	class="grid grid-cols-5 gap-4 justify-between border-2 border-purple-300 py-2 px-2 items-center {timeRunning
+	class="grid grid-cols-6 gap-4 justify-between border-2 border-purple-300 py-2 px-2 items-center {timeRunning
 		? 'bg-purple-300'
 		: ''} {task.archived ? 'bg-red-200' : ''}"
 >
 	<h1 class="text-xl">{task.text}</h1>
-	<Button on:click={recordTime} disabled={false}>{timeRunning ? 'Stop' : 'Start'} ({hotKey})</Button
+	<Button on:click={soloTimer} disabled={false}
+		>{$activeTimer && $timedTask == task ? 'Stop' : 'Start'} {hotKey ? hotKey : ''}</Button
 	>
-	<span>Time Elapsed: {formatTime(task.time)}</span>
+	<span
+		>Time Elapsed:
+		{#if toggleEdit}
+			<TextField password={false} bind:value={task.time} placeholder={task.time} />
+		{:else}
+			{formatTime(task.time)}
+		{/if}
+	</span>
 	<Button
 		on:click={() => {
 			deleteTask(task);
@@ -92,4 +143,7 @@
 			}}
 		/>
 	</div>
+	<Button disabled={false} on:click={handleEdit}
+		>{#if toggleEdit}Save{:else}Edit{/if}</Button
+	>
 </div>

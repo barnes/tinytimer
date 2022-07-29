@@ -6,6 +6,7 @@ import type { User } from '@supabase/supabase-js';
 const user: User | null = supabase.auth.user();
 export const tasks: Writable<Array<Task>> = writable();
 export const activeTimer = writable(false);
+export const timedTask: Writable<Task> | null = writable();
 
 export const keyOptions = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
 
@@ -108,4 +109,14 @@ export const toggleArchived = async (task: Task) => {
 		getTasks(user);
 		return data;
 	}
+};
+
+export const timer = async (task: Task) => {
+	setInterval(async () => {
+		task.time++;
+		if (task.time % 30 == 0) {
+			await updateTime(task);
+		}
+	}, 1000);
+	return task;
 };

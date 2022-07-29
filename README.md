@@ -25,12 +25,10 @@ Supabase for the backend
 - Logged In
 - History / Log
 
-### TODO: 
+### TODO:
+
 - Refactor index to include a day start view.
 - Create a dynamic route for day summary.
-- Remove and replace the textfield / button components...maybe?
-- Break login form to its own page
+- One timer at a time. Core functionality is there, just need to tinker.
+- Cleaner time edit method. Right now it is only in seconds.
 - Implement email / password login as well
-- Time in the page title
-- keyboard shortcuts
--- really cool dynamic shortcuts for start and stop time on tasks
