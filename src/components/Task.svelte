@@ -30,29 +30,29 @@
 	};
 
 	const soloTimer = async () => {
-		console.log('WHEN CLICKED:');
-		console.log($activeTimer);
-		console.log($timedTask.id);
-		console.log(task.id);
-		console.log($timedTask.id == task.id);
-		if ($activeTimer && $timedTask.id != task.id) {
-			console.log('STATE1:' + $activeTimer.id + $timedTask.id);
-			$activeTimer = false;
+		if ($timedTask) {
+			if ($activeTimer && $timedTask.id != task.id) {
+				console.log('STATE1:' + $activeTimer + $timedTask.id);
+				await updateTime(task);
+				$activeTimer = true;
+				$timedTask = task;
+			} else if (!$activeTimer && $timedTask.id == task.id) {
+				await updateTime(task);
+				console.log('STATE2:' + $activeTimer + $timedTask.id);
+				$activeTimer = true;
+			} else if ($activeTimer && $timedTask.id == task.id) {
+				await updateTime(task);
+				console.log('STATE3:' + $activeTimer + $timedTask.id);
+				$activeTimer = false;
+			} else if (!$activeTimer && $timedTask.id != task.id) {
+				await updateTime(task);
+				console.log('STATE4:' + $activeTimer + $timedTask.id);
+				$timedTask = task;
+				$activeTimer = true;
+			}
+		} else {
 			$timedTask = task;
-			await updateTime(task);
-		} else if (!$activeTimer && $timedTask.id == task.id) {
-			console.log('STATE2:' + $activeTimer.id + $timedTask.id);
 			$activeTimer = true;
-			await updateTime(task);
-		} else if ($activeTimer && $timedTask.id == task.id) {
-			console.log('STATE3:' + $activeTimer.id + $timedTask.id);
-			$activeTimer = false;
-			await updateTime(task);
-		} else if (!$activeTimer && $timedTask.id != task.id) {
-			console.log('STATE4:' + $activeTimer.id + $timedTask.id);
-			$timedTask = task;
-			$activeTimer = true;
-			await updateTime(task);
 		}
 	};
 
