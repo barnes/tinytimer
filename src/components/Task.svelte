@@ -37,56 +37,60 @@
 		}
 	};
 
-	const soloTimer = async () => {
-		if ($previousTask) {
-			updateTime($previousTask);
-		}
-		if ($timedTask) {
-			if ($activeTimer && $timedTask.id != task.id) {
-				console.log('STATE1:' + $activeTimer + $timedTask.id);
-				await updateTime(task);
-				$activeTimer = true;
-				$timedTask = task;
-				$previousTask = task;
-				recording = false;
-			} else if (!$activeTimer && $timedTask.id == task.id) {
-				await updateTime(task);
-				console.log('STATE2:' + $activeTimer + $timedTask.id);
-				$activeTimer = true;
-				recording = true;
-				$previousTask = task;
-			} else if ($activeTimer && $timedTask.id == task.id) {
-				await updateTime(task);
-				console.log('STATE3:' + $activeTimer + $timedTask.id);
-				$activeTimer = false;
-				$previousTask = task;
-				recording = false;
-			} else if (!$activeTimer && $timedTask.id != task.id) {
-				await updateTime(task);
-				console.log('STATE4:' + $activeTimer + $timedTask.id);
-				$timedTask = task;
-				$previousTask = task;
-				$activeTimer = true;
-				recording = true;
-			}
-		} else {
-			$timedTask = task;
-			$activeTimer = true;
-			$previousTask = task;
-		}
-	};
+	// const soloTimer = async () => {
+	// 	if ($previousTask) {
+	// 		updateTime($previousTask);
+	// 	}
+	// 	if ($timedTask) {
+	// 		if ($activeTimer && $timedTask.id != task.id) {
+	// 			console.log('STATE1:' + $activeTimer + $timedTask.id);
+	// 			await updateTime(task);
+	// 			$activeTimer = true;
+	// 			$timedTask = task;
+	// 			$previousTask = task;
+	// 			recording = false;
+	// 		} else if (!$activeTimer && $timedTask.id == task.id) {
+	// 			await updateTime(task);
+	// 			console.log('STATE2:' + $activeTimer + $timedTask.id);
+	// 			$activeTimer = true;
+	// 			recording = true;
+	// 			$previousTask = task;
+	// 		} else if ($activeTimer && $timedTask.id == task.id) {
+	// 			await updateTime(task);
+	// 			console.log('STATE3:' + $activeTimer + $timedTask.id);
+	// 			$activeTimer = false;
+	// 			$previousTask = task;
+	// 			recording = false;
+	// 		} else if (!$activeTimer && $timedTask.id != task.id) {
+	// 			await updateTime(task);
+	// 			console.log('STATE4:' + $activeTimer + $timedTask.id);
+	// 			$timedTask = task;
+	// 			$previousTask = task;
+	// 			$activeTimer = true;
+	// 			recording = true;
+	// 		}
+	// 	} else {
+	// 		$timedTask = task;
+	// 		$activeTimer = true;
+	// 		$previousTask = task;
+	// 	}
+	// };
 
 	const soloTimerRefactor = async () => {
 		if ($timedTask) {
 			if ($activeTimer) {
 				if ($timedTask.id == task.id) {
 					console.log('ACTIVE RECORDING STATE, STOPPING RECORDING');
-					updateTime(task);
+					await updateTime(task);
 					$activeTimer = false;
 					recording = false;
 				} else if ($timedTask.id != task.id) {
 					console.log('ACTIVE RECORDING, WRONG TASK');
-					$activeTimer = false;
+					console.log(task.id);
+					console.log($timedTask.id);
+					await updateTime($timedTask);
+					$timedTask = task;
+					//$activeTimer = false;
 				}
 			} else {
 				if ($timedTask.id == task.id) {
@@ -101,6 +105,7 @@
 				}
 			}
 		} else {
+			console.log('INITIAL STATE, SETTING TASK');
 			$timedTask = task;
 			$activeTimer = true;
 			recording = true;
@@ -110,7 +115,8 @@
 	setInterval(async () => {
 		if ($activeTimer && $timedTask.id == task.id) {
 			console.log('TIMER RUNNING');
-			task.time++;
+			//task.time++;
+			$timedTask.time++;
 			if (task.time % 30 == 0) {
 				await updateTime(task);
 			}
@@ -161,13 +167,13 @@
 <svelte:window on:keydown={handleKey} />
 
 <div
-	class="grid grid-cols-6 gap-4 justify-between border-2 border-purple-300 py-2 px-2 items-center {recording
+	class="grid grid-cols-6 gap-4 justify-between border-2 border-purple-300 py-2 px-2 items-center {$activeTimer
 		? 'bg-purple-300'
 		: ''} {task.archived ? 'bg-red-200' : ''}"
 >
 	<h1 class="text-xl">{task.text}</h1>
 	<Button on:click={soloTimerRefactor} disabled={false}
-		>{recording ? 'Stop' : 'Start'} {hotKey ? hotKey : ''}</Button
+		>{$activeTimer ? 'Stop' : 'Start'} {hotKey ? hotKey : ''}</Button
 	>
 	<span
 		>Time Elapsed:
