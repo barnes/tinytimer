@@ -1,22 +1,13 @@
 <script lang="ts">
-	import {
-		deleteTask,
-		updateTime,
-		toggleArchived,
-		activeTimer,
-		timedTask,
-		previousTask
-	} from '$lib/taskStore';
+	import { deleteTask, updateTime, toggleArchived, activeTimer, timedTask } from '$lib/taskStore';
 	import type { Task } from '$lib/taskStore';
 	import Button from './Button.svelte';
 	import TextField from './TextField.svelte';
 
 	export let task: Task;
 	export let hotKey: string | null;
-	console.log($activeTimer);
 	let timeRunning = false;
 	let toggleEdit = false;
-	let recording = false;
 
 	const formatTime = (time: number) => {
 		let minutes: number;
@@ -37,88 +28,52 @@
 		}
 	};
 
-	// const soloTimer = async () => {
-	// 	if ($previousTask) {
-	// 		updateTime($previousTask);
-	// 	}
-	// 	if ($timedTask) {
-	// 		if ($activeTimer && $timedTask.id != task.id) {
-	// 			console.log('STATE1:' + $activeTimer + $timedTask.id);
-	// 			await updateTime(task);
-	// 			$activeTimer = true;
-	// 			$timedTask = task;
-	// 			$previousTask = task;
-	// 			recording = false;
-	// 		} else if (!$activeTimer && $timedTask.id == task.id) {
-	// 			await updateTime(task);
-	// 			console.log('STATE2:' + $activeTimer + $timedTask.id);
-	// 			$activeTimer = true;
-	// 			recording = true;
-	// 			$previousTask = task;
-	// 		} else if ($activeTimer && $timedTask.id == task.id) {
-	// 			await updateTime(task);
-	// 			console.log('STATE3:' + $activeTimer + $timedTask.id);
-	// 			$activeTimer = false;
-	// 			$previousTask = task;
-	// 			recording = false;
-	// 		} else if (!$activeTimer && $timedTask.id != task.id) {
-	// 			await updateTime(task);
-	// 			console.log('STATE4:' + $activeTimer + $timedTask.id);
-	// 			$timedTask = task;
-	// 			$previousTask = task;
-	// 			$activeTimer = true;
-	// 			recording = true;
-	// 		}
-	// 	} else {
-	// 		$timedTask = task;
-	// 		$activeTimer = true;
-	// 		$previousTask = task;
-	// 	}
-	// };
+	function formatTimeInput(string: string) {
+		console.log(string);
+		if (string.includes('h')) {
+		} else if (string.includes('m')) {
+		} else if (string.includes('s')) {
+		}
+	}
 
 	const soloTimerRefactor = async () => {
 		if ($timedTask) {
 			if ($activeTimer) {
 				if ($timedTask.id == task.id) {
-					console.log('ACTIVE RECORDING STATE, STOPPING RECORDING');
+					// console.log('ACTIVE RECORDING STATE, STOPPING RECORDING');
 					await updateTime(task);
 					$activeTimer = false;
-					recording = false;
 				} else if ($timedTask.id != task.id) {
-					console.log('ACTIVE RECORDING, WRONG TASK');
-					console.log(task.id);
-					console.log($timedTask.id);
+					// console.log('ACTIVE RECORDING, WRONG TASK');
 					await updateTime($timedTask);
 					$timedTask = task;
-					//$activeTimer = false;
 				}
 			} else {
 				if ($timedTask.id == task.id) {
-					console.log('NOT RECORDING, STARTING RECORDING');
+					// console.log('NOT RECORDING, STARTING RECORDING');
 					$activeTimer = true;
-					recording = true;
 				} else if ($timedTask.id != task.id) {
-					console.log('NOT RECORDING, WRONG TASK');
+					// console.log('NOT RECORDING, WRONG TASK');
 					$timedTask = task;
 					$activeTimer = true;
-					recording = true;
 				}
 			}
 		} else {
-			console.log('INITIAL STATE, SETTING TASK');
+			// console.log('INITIAL STATE, SETTING TASK');
 			$timedTask = task;
 			$activeTimer = true;
-			recording = true;
 		}
 	};
 
 	setInterval(async () => {
-		if ($activeTimer && $timedTask.id == task.id) {
-			console.log('TIMER RUNNING');
-			//task.time++;
-			$timedTask.time++;
-			if (task.time % 30 == 0) {
-				await updateTime(task);
+		if ($timedTask) {
+			if ($activeTimer && $timedTask.id == task.id) {
+				console.log('TIMER RUNNING');
+				task.time++;
+				$timedTask.time++;
+				if (task.time % 30 == 0) {
+					await updateTime(task);
+				}
 			}
 		}
 	}, 1000);
@@ -167,14 +122,17 @@
 <svelte:window on:keydown={handleKey} />
 
 <div
-	class="grid grid-cols-6 gap-4 justify-between border-2 border-purple-300 py-2 px-2 items-center {$activeTimer
+	class="grid grid-cols-6 gap-4 justify-between border-2 border-purple-300 py-2 px-2 items-center {$activeTimer &&
+	$timedTask?.id == task.id
 		? 'bg-purple-300'
 		: ''} {task.archived ? 'bg-red-200' : ''}"
 >
 	<h1 class="text-xl">{task.text}</h1>
+
 	<Button on:click={soloTimerRefactor} disabled={false}
-		>{$activeTimer ? 'Stop' : 'Start'} {hotKey ? hotKey : ''}</Button
+		>{$activeTimer ? 'Stop' : 'Start'} ({hotKey ? hotKey : ''})</Button
 	>
+
 	<span
 		>Time Elapsed:
 		{#if toggleEdit}
@@ -183,12 +141,14 @@
 			{formatTime(task.time)}
 		{/if}
 	</span>
+
 	<Button
 		on:click={() => {
 			deleteTask(task);
 		}}
 		disabled={false}>Delete</Button
 	>
+
 	<div>
 		<label for={task.id?.toString()}>Completed</label>
 		<input
@@ -200,6 +160,7 @@
 			}}
 		/>
 	</div>
+
 	<Button disabled={false} on:click={handleEdit}
 		>{#if toggleEdit}Save{:else}Edit{/if}</Button
 	>

@@ -7,7 +7,6 @@ const user: User | null = supabase.auth.user();
 export const tasks: Writable<Array<Task>> = writable();
 export const activeTimer = writable(false);
 export const timedTask: Writable<Task> | null = writable();
-export const previousTask: Writable<Task> | null = writable();
 
 export const keyOptions = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
 
