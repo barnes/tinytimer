@@ -21,7 +21,7 @@
 				{/if}
 			{:else if archived}
 				{#if task.archived}
-					<Task {task} />
+					<Task {task} hotKey={null} />
 				{/if}
 			{/if}
 		{/each}

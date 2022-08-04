@@ -6,7 +6,6 @@
 
 	export let task: Task;
 	export let hotKey: string | null;
-	let timeRunning = false;
 	let toggleEdit = false;
 
 	const formatTime = (time: number) => {
@@ -40,26 +39,21 @@
 		if ($timedTask) {
 			if ($activeTimer) {
 				if ($timedTask.id == task.id) {
-					// console.log('ACTIVE RECORDING STATE, STOPPING RECORDING');
 					await updateTime(task);
 					$activeTimer = false;
 				} else if ($timedTask.id != task.id) {
-					// console.log('ACTIVE RECORDING, WRONG TASK');
 					await updateTime($timedTask);
 					$timedTask = task;
 				}
 			} else {
 				if ($timedTask.id == task.id) {
-					// console.log('NOT RECORDING, STARTING RECORDING');
 					$activeTimer = true;
 				} else if ($timedTask.id != task.id) {
-					// console.log('NOT RECORDING, WRONG TASK');
 					$timedTask = task;
 					$activeTimer = true;
 				}
 			}
 		} else {
-			// console.log('INITIAL STATE, SETTING TASK');
 			$timedTask = task;
 			$activeTimer = true;
 		}
@@ -78,22 +72,6 @@
 		}
 	}, 1000);
 
-	// setInterval(async () => {
-	// 	if (timeRunning) {
-	// 		task.time++;
-	// 		if (task.time % 30 == 0) {
-	// 			await updateTime(task);
-	// 		}
-	// 	}
-	// }, 1000);
-
-	const recordTime = async () => {
-		timeRunning = !timeRunning;
-		if (task.time > 0) {
-			await updateTime(task);
-		}
-	};
-
 	const handleKey = async (event: any) => {
 		if (document.activeElement?.tagName != 'INPUT') {
 			if (event.key == hotKey) {
@@ -108,13 +86,10 @@
 </script>
 
 <svelte:head>
-	<!-- {#if timeRunning} -->
 	<title>
 		{formatTime(task.time)} : {task.text}
 	</title>
-	<!-- {:else}
-		<title>tinytimer</title>
-	{/if} -->
+
 	<meta name="robots" content="noindex nofollow" />
 	<html lang="en" />
 </svelte:head>
@@ -130,8 +105,11 @@
 	<h1 class="text-xl">{task.text}</h1>
 
 	<Button on:click={soloTimerRefactor} disabled={false}
-		>{$activeTimer ? 'Stop' : 'Start'} ({hotKey ? hotKey : ''})</Button
-	>
+		>{$activeTimer && $timedTask?.id == task.id ? 'Stop' : 'Start'}
+		{#if !task.archived}
+			({hotKey ? hotKey : ''})
+		{/if}
+	</Button>
 
 	<span
 		>Time Elapsed:
